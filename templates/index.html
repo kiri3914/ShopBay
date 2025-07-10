@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- Main Container -->
+<div class="main-container">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <form method="get" id="filterForm">
+        <div class="sidebar-section">
+            <div class="filter-group">
+                <div class="filter-options">
+                    <button type="submit" class="filter-btn" name="usersegment" value="">Все</button>
+                    {% for usersegment in usersegments %}
+                        <button type="submit" class="filter-btn" name="usersegment" value="{{ usersegment.name }}">{{ usersegment.name }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <h3 class="sidebar-title">Коллекция</h3>
+            <div class="filter-group">
+                <div class="filter-options">
+                    <button type="submit" class="filter-btn" name="category" value="">Все</button>
+                    {% for category in categories %} 
+                        <button type="submit" class="filter-btn" name="category" value="{{ category.title }}">{{ category.title }}</button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h3 class="sidebar-title">Фильтр</h3>
+            <div class="filter-group">
+                <h4 class="filter-title">Тип</h4>
+                <div class="filter-options">
+                    <button type="submit" class="filter-btn" name="type" value="">Все</button>
+                    <button type="submit" class="filter-btn" name="type" value="new">New</button>
+                    <button type="submit" class="filter-btn" name="type" value="bestseller">Best Seller</button>
+                    <button type="submit" class="filter-btn" name="type" value="sale">Sale</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h4 class="filter-title">Цвет</h4>
+                <div class="color-filters">
+                    <button class="color-option all" name="color" value=""></button>
+                    <button class="color-option black" name="color" value="black"></button>
+                    <button class="color-option white" name="color" value="white"></button>
+                    <button class="color-option gray" name="color" value="gray"></button>
+                    <button class="color-option red" name="color" value="red"></button>
+                    <button class="color-option blue" name="color" value="blue"></button>
+                    <button class="color-option green" name="color" value="green"></button>
+                    <button class="color-option orange" name="color" value="orange"></button>
+                    <button class="color-option purple" name="color" value="purple"></button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h4 class="filter-title">Размер</h4>
+                <div class="filter-options">
+                    <button type="submit" class="filter-btn" name="size" value="">Все</button>
+                    <button type="submit" class="filter-btn" name="size" value="s">S</button>
+                    <button type="submit" class="filter-btn" name="size" value="m">M</button>
+                    <button type="submit" class="filter-btn" name="size" value="l">L</button>
+                    <button type="submit" class="filter-btn" name="size" value="xl">XL</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <h4 class="filter-title">Цена</h4>
+                <div class="price-range">
+                    <input type="number" class="price-input" placeholder="Мин" name="min_price" onchange="this.form.submit()">
+                    <span>-</span>
+                    <input type="number" class="price-input" placeholder="Макс" name="max_price" onchange="this.form.submit()">
+                </div>
+            </div>
+        </div>
+    </form>
+</aside>
+
+<style>
+    .filter-btn {
+        display: inline-block;
+        margin: 4px;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        background-color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .filter-btn:hover {
+        background-color: #eee;
+    }
+
+    .color-option {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #999;
+        margin: 3px;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .color-option.all {
+        background: repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 50% / 10px 10px;
+    }
+    .color-option.black { background-color: black; }
+    .color-option.white { background-color: white; }
+    .color-option.gray { background-color: gray; }
+    .color-option.red { background-color: red; }
+    .color-option.blue { background-color: blue; }
+    .color-option.green { background-color: green; }
+    .color-option.orange { background-color: orange; }
+    .color-option.purple { background-color: purple; }
+</style>
+
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <div class="content-header">
+                <h1 class="page-title" id="pageTitle">Рубашки</h1>
+                <div class="sort-container">
+                    <select class="sort-select" id="sortSelect" onchange="sortProducts()">
+                        <option value="popular">Популярные</option>
+                        <option value="price-low">Цена: Сначала дешевые</option>
+                        <option value="price-high">Цена: Сначала дорогие</option>
+                        <option value="newest">Новинки</option>
+                        <option value="rating">Высокий рейтинг</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="product-grid" id="productGrid">
+                {% for product in products %}
+                <div class="product-card">
+                    <a href="#">
+                    <div class="product-image">
+                        <img src="{{ product.mane_image.url }}" alt="{{ product.title }}">
+                        <div class="product-badge badge-{{ product.type_sale }}">
+                            {{ product.get_type_sale_display }}
+                    </div>
+                </a>
+                </div>
+                 <div class="product-info">
+            <h3 class="product-title">{{ product.title }}</h3>
+            <p class="product-color">Цвет: {{ product.get_color_display }}</p>
+            <p class="product-size">Размер: {{ product.size.name }}</p>
+            <p class="product-price">{{ product.price }} ₸</p>
+            <a href="{% url 'add_to_cart' product.id %}">
+            <button class="add-to-cart">Добавить в корзину</button>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+            </div>
+
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be dynamically loaded here -->
+            </div>
+        </main>
+    </div>
+
+{% endblock content %}
